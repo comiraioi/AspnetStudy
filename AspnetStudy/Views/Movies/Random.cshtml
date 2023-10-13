@@ -1,0 +1,47 @@
+﻿<!-- 뷰가 특정 모델이 아닌 ViewModel을 참조하도록 함 -->
+@*@model AspnetStudy.ViewModels.RandomMovieViewModel*@
+@{
+    ViewBag.Title = "Random";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@* 뷰에 데이터 넘기기
+    [방법1] 모델 속성
+    @Model.속성명
+
+    [방법2] View Data: View Data의 모든 항목이 object이므로 속성에 접근할 때 Movie 객체로 캐스팅 해야함
+    @( ((Movie) ViewData["Movie"].Title ) )
+
+    [방법3] View Bag
+    @ViewBag.모델명.속성명
+*@
+
+<!-- 클래스 동적으로 렌더링하기 -->
+@{
+    var className = Model.Customers.Count > 5 ? "popular" : null; //customers가 5명 이상인 경우 "popular"
+}
+
+<style>
+    .popular {
+        color: blue;
+        font-weight: bold;
+    }
+</style>
+
+<!-- [방법4] ViewModel -->
+<h2 class="@className">@Model.Movie.Title</h2>
+
+@if (Model.Customers.Count == 0)
+{
+    <p>해당 영화를 대여 중인 사용자가 없습니다.</p>
+}
+else
+{
+    <ul>
+        @foreach (var customer in Model.Customers)
+        {
+            <li>@customer.Name</li>
+        }
+    </ul>
+}

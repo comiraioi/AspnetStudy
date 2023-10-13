@@ -1,0 +1,23 @@
+﻿@model AspnetStudy.Models.Customer
+
+@{
+    ViewBag.Title = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+<ul>
+    @if (Model.Birthdate.HasValue)
+    {
+        <li>Birthdate: @Model.Birthdate.Value.ToShortDateString()</li>
+    }
+
+    @try
+    {
+        <li>Membership Type: @Model.MembershipType.Name</li>
+    }
+    catch (NullReferenceException ex)
+    {
+    }
+
+</ul>
