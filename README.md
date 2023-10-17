@@ -1,7 +1,8 @@
 # AspnetStudy
 An ASP.NET MVC demo project from [The Complete ASP.NET MVC 5 Course](https://www.udemy.com/course/the-complete-aspnet-mvc-5-course/) by Mosh Hamedani
 * 강의 소스코드: [https://github.com/stefaleon/Vidly](https://github.com/stefaleon/Vidly)
-* ASP.NET MVC 5 기초 사이트: [https://www.tutorialsteacher.com/mvc](https://www.tutorialsteacher.com/mvc)
+* ASP.NET MVC 5 기초 사이트
+* : [https://www.tutorialsteacher.com/mvc](https://www.tutorialsteacher.com/mvc) / [https://thebook.io/006824/](https://thebook.io/006824/)(25장부터)
 
 <br>
 
@@ -183,24 +184,24 @@ return View();	//뷰: @ViewBag.모델명.속성명
 ### [방법4] View Models
 뷰를 위해 만들어진 모델로 해당 뷰에 관한 데이터와 규칙을 포함함 (모델 두개를 넘길 수 있음)
 - 뷰 모델 생성: ViewModels 폴더 생성 > 모델 클래스 추가하기
-- 뷰가 특정 모델이 아닌 뷰 모델을 참조하도록 하여 여러 모델의 데이터를 불러올 수 있음
-  ex) @model 프로젝트명.ViewModels.뷰모델명 (뷰 상단의 참조 모델을 뷰 모델로 수정)
-```
-var 테이블명1 = new List<모델명1>
-{
-    new 모델명1 {속성1 = 값1, 속성2 = 값2, ... , 속성n = 값n},
-    new List<모델명1>{new 모델명1 {속성1 = 값1, 속성2 = 값2, ... , 속성n = 값n}
-};
-
-var 테이블명2 = new List<모델명2>
-{
-    new 모델명2 {속성1 = 값1, 속성2 = 값2, ... , 속성n = 값n},
-    new List<모델명2>{new 모델명2 {속성1 = 값1, 속성2 = 값2, ... , 속성n = 값n}
-};
-
-return View(viewModel);		//뷰: @Model.모델명.속성명
-```
-
+- 뷰가 특정 모델이 아닌 복합 모델 객체를 담은 뷰모델을 참조하도록 하여 여러 모델의 속성을 불러올 수 있음 <br>
+  ex) @model 프로젝트명.Models.모델명 > @model 프로젝트명.ViewModels.뷰모델명 (뷰 상단의 참조 모델을 뷰 모델로 수정)
+  - 뷰 모델
+    ```
+    public class 뷰모델명
+    {
+        /*
+        IEnumerable > List
+        - IEnumerable: Collection의 요소들을 반복하고 싶을 때, read-only 접근만 필요한 경우
+                       foreach loop 대신 GetEnumerater()로 IEnumerator를 return 받아 MoveNext(), Current로 대체할 수 있음
+        - List: Collection 요소들의 순서와 위치를 관리하고 데이터를 변형(추가,수정,삭제)하고 싶을 때
+                (뷰에서는 List에서 제공하는 기능들이 필요하지 않음)
+        */
+        public 모델1 변수명 { get; set; }
+        public IEnumerable<모델2> 변수명 { get; set; }	// 모델1이 모델2를 참조함
+    }
+    ```
+  - 뷰 모델에 입력받은 데이터는 컨트롤러에서 [모델 바인딩](https://github.com/comiraioi/AspnetStudy/edit/master/README.md#model-binding)을 통해 뷰 모델 안의 모델 객체로 넣을 수 있음
 <br>
 
 ---
@@ -335,12 +336,22 @@ public ViewResult 액션명()	//액션 메서드
 <br>
 
 ---
-## Html Helper로 Form 생성하기
+## Form
+### Form 생성
+- __Html.BeginForm()__: <form> 태그를 자동으로 만들어주는 헬퍼 메서드
+- url은 언제든 변경이 가능하기 때문에 헬퍼 메서드를 사용하게 되면 변경된 URL에 맞게 속성이 재지정됨
+  ```
+  @using (Html.BeginForm("액션명","테이블명"))
+  {
+  
+  }
+  ```
+
 ### Html Helper
 - Html Helper는 모두 @Html 으로 시작
 - @: Razor 문법으로 View 클래스(WebViewPage)의 Html 속성을 호출한다는 의미
 - 모델 데이타 혹은 View 데이타 바인딩을 쉽게 할 수 있는 기능을 제공
-- __메서드 종류__
+- __메서드 타입__
   - Weakly Typed 메서드: Html.TextBox()와 같은 형태
     ```
     /* <input class="form-control" id="Name" name="Name" type="text" value=""/> */
@@ -357,50 +368,111 @@ public ViewResult 액션명()	//액션 메서드
     // 두번째 파라미터: TextBox의 Value, null이면 모델명.Name	(생략 가능)
     // 세번째 파라미터: HTML의 기타 attributes
     ```
-
-### Html Helper 메서드
-__* 참고 사이트__ <br>
-  [https://thebook.io/006824/1385/](https://thebook.io/006824/1385/) <br>
-  [https://www.tutorialsteacher.com/mvc/html-helpers](https://www.tutorialsteacher.com/mvc/html-helpers) <br>
-  [https://docs.devexpress.com/AspNetMvc/14602/components/data-editors-extensions/strongly-typed-editor-types](https://docs.devexpress.com/AspNetMvc/14602/components/data-editors-extensions/strongly-typed-editor-types)
-- 입력 요소
-  - Html.TextBox / Html.TextBoxFor: 문자열 입력받기 (```<input type="text">```)
-  - Html.TextArea / Html.TextAreaFor: 문자열 여러줄 입력받기 (```<textarea>```)
-  - Html.CheckBox / Html.CheckBoxFor: ```<input type="checkbox">```
-  - Html.ListBox / Html.ListBoxFor: 리스트 형태의 체크박스
-  - Html.RadioButton / Html.RadioButtonFor: ```<input type="radiobutton">```
-  - Html.DropDownList / Html.DropDownListFor: ```<select><option>```
-  - Html.Hidden / Html.HiddenFor: 뷰에 출력하지 않고 값 전달 (```<input type="hidden">```)
-  - Password / Html.PasswordFor: ```<input type="password">```
-  - Html.Editor / Html.EditorFor: 모델 속성의 데이터 타입에 따라 입력받기 <br>
+- __Html Helper 메서드__ <br>
+``` @Html.메서드명(m => m.모델명.속성명, new { @class = "템플릿" }) ``` <br>
+__[입력 요소]__
+  - Html.TextBox / __Html.TextBoxFor__: 문자열 입력받기 (```<input type="text">```)
+    * Datetype 포맷 설정은 템플릿 앞 파라미터로 작성 &nbsp; Ex) "{0:yyyy-MM-dd}"
+  - Html.TextArea / __Html.TextAreaFor__: 문자열 여러줄 입력받기 (```<textarea>```)
+  - Html.CheckBox / __Html.CheckBoxFor__: ```<input type="checkbox">```
+  - Html.ListBox / __Html.ListBoxFor__: 리스트 형태의 체크박스
+  - Html.RadioButton / __Html.RadioButtonFor__: ```<input type="radiobutton">```
+  - Html.DropDownList / __Html.DropDownListFor__: ```<select><option>``` <br>
+    ```
+    // DropDownList 초기화: new SelectList()
+    @Html.DropDownListFor(m => m.모델명.속성명, new SelectList(Model.모델명, "값을 담은 속성명", "default 옵션", "텍스트로 보여질 속성명"), new { @class = "템플릿" })
+    ```
+  - Html.Hidden / __Html.HiddenFor__: 뷰에 출력하지 않고 값 전달 (```<input type="hidden">```)
+  - Password / __Html.PasswordFor__: ```<input type="password">```
+  - Html.Editor / __Html.EditorFor__: 모델 속성의 데이터 타입에 따라 입력받기 <br>
   		Html.EditorForModel: 모델 전체에 입력받기 (```<input type="">```)
     ```
-    //DataType			//HtmlElement
+    //DataType		//HtmlElement
     string			<input type="text">
-    int				<input type="number">
+    int			<input type="number">
     decimal, float		<input type="text">
     boolean			<input type="checkbox">
-    Enum				<input type="text">
+    Enum			<input type="text">
     DataTime		<input type="datatime">
     ```
-- 데이터 출력
-  - Html.Display / Html.DisplayFor: 모델 속성값 출력 <br>
-  		 Html.DisplayForModel: 모델 전체 출력
-- 기타
-  - Html.Label / Html.LabelFor: 라벨 설정 (```<label for="아이디">```) <br>
+  __[데이터 출력]__
+  - Html.Display / __Html.DisplayFor__: 모델 속성값 출력 <br>
+  		 Html.DisplayForModel: 모델 전체 출력 <br>
+
+  __[기타]__
+  - Html.Label / __Html.LabelFor__: 라벨 설정 (```<label for="아이디">```) <br>
     __*__ 모델 클래스에서 속성에 __Display(Name = "라벨명")__ 을 추가해 라벨명 설정 가능 <br>
 &nbsp; (라벨명을 변경하고 싶을 때 뷰가 아닌 모델 클래스에서 바꿔주어야 한다는 단점이 있음)
-  - Html.ActionLink: 링크 설정 (```<a href="">```)
-  
-### Form 생성
-- __Html.BeginForm()__: <form> 태그를 자동으로 만들어주는 헬퍼 메서드
-- url은 언제든 변경이 가능하기 때문에 헬퍼 메서드를 사용하게 되면 변경된 URL에 맞게 속성이 재지정됨
+  - __Html.ActionLink__: 액션 링크 및 버튼 설정 (```<a href="">```)
+    ```
+    //버튼인 경우 템플릿에 "btn" 
+    @Html.ActionLink("텍스트", "액션명", "컨트롤러명", new {매개변수명 = Model.속성명}, new { @class = "템플릿" })
+    ```
+    
+### Form Page
+- 폼에 출력할 속성이 여러 모델의 속성인 경우 [뷰모델](https://github.com/comiraioi/AspnetStudy/edit/master/README.md#%EB%B0%A9%EB%B2%954-view-models)을 별도로 생성
+- Insert Form Page로 이동하는 액션 메서드
   ```
-  @using (Html.BeginForm("액션명","테이블명"))
+  public ActionResult 액션명()
   {
+      /* DropDownList option을 출력하기 위해 DB에서 가져오기 */
+      var db데이터 = _context.테이블명.ToList();	//뷰에 출력할 데이터를 가져옴
+  
+      var viewModel = new 뷰모델명
+      {
+          테이블명 = db데이터	//DB에서 가져온 참조 데이터를 모델에 담기
+      };
 
+      return View("Form뷰명",viewModel);
   }
   ```
+- Update Form Page로 이동하는 액션 메서드
+  ```
+  public ActionResult 액션명(매개변수)	//액션링크 파라미터로 받은 고객 아이디
+  {
+      // 파라미터로 넘어온 아이디와 일치하는 레코드 데이터 가져오기
+      var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+
+      if(customer == null)
+          return HttpNotFound();
+
+      // 뷰모델로 복합모델 넘기기
+      var viewModel = new CustomerFormViewModel 
+      { 
+          Customer = customer,    //모델 객체에 id가 일치하는 레코드의 데이터 담기
+          MembershipTypes = _context.MembershipTypes.ToList()
+      };
+
+      return View("Form뷰명", viewModel);
+  }
+  ```
+
+### Form Data
+- __Model Binding__: Http로 전송된 데이터를 C#의 모델 클래스에 담아 액션 메서드에 전달하는 기법
+  - Http 요청 데이터를 직접 .NET 개체와 매핑해주는데 폼 컬렉션과 쿼리 스트링을 분석하여 액션 메서드의 매개 변수에 매핑해주는 기능을 제공함
+  - HttpPost 방식 액션 메서드의 매개변수를 C# 클래스인 모델 클래스 형태로 묶어 전달 받을 수 있도록 내부적으로 처리해주는 기능
+  - 모델 바인딩을 사용하면 여러 개의 매개 변수를 처리해야 하는 액션 메서드에서 모델 클래스만 지정함으로써 한 번에 여러 데이터를 그 형태에 맞게 받을 수 있음
+- __HttpPost 액션 메서드__ <br>
+  : Form의 항목이 복합 모델 속성인 관계로 [뷰모델](https://github.com/comiraioi/AspnetStudy/edit/master/README.md#%EB%B0%A9%EB%B2%954-view-models)을 생성해 입력받았다 할지라도 <br>
+  &nbsp; __모델 바인딩__ 을 통해 매개변수를 뷰모델 안의 모델 객체로 작성하여 해당 모델에 데이터를 받을 수 있음
+  ```
+  [HttpPost]
+  public ActionResult 액션명(모델명 변수명)  // 매개변수 모델 바인딩
+  {
+      /*
+      [Form에서 Submit한 데이터 확인하기]
+      return에 F9로 중단점 설정 > F5로 디버거 실행 > Form 페이지 url 요청(Customer/New)
+      > 페이지 검사 > Network > 요청명(Create) 클릭 > Payload에서 Form Data 확인 가능
+      */
+
+      _context.테이블명.Add(모델변수명);   // 매개변수로 받은 데이터 DB에 insert
+      _context.SaveChanges();     // commit tran
+
+      return RedirectToAction("액션명", "컨트롤러명");	// 리스트 페이지로 돌아가기
+  }
+  ```
+
+
 
 
 
