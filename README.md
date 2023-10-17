@@ -1,6 +1,7 @@
 # AspnetStudy
 An ASP.NET MVC demo project from [The Complete ASP.NET MVC 5 Course](https://www.udemy.com/course/the-complete-aspnet-mvc-5-course/) by Mosh Hamedani
 * 강의 소스코드: [https://github.com/stefaleon/Vidly](https://github.com/stefaleon/Vidly)
+* ASP.NET MVC 5 기초 사이트: [https://www.tutorialsteacher.com/mvc](https://www.tutorialsteacher.com/mvc)
 
 <br>
 
@@ -26,6 +27,7 @@ __* Controllers__
   
 __* Models__
 : 도메인 클래스 작성
+- IdentityModels: context 메서드에 DBset 추가
 
 __* Scripts__
 : JavaScript 파일 저장
@@ -330,7 +332,75 @@ public ViewResult 액션명()	//액션 메서드
   - **SingleOrDefault()**: 값이 없으면(없는 데이터 요청 시) null 값 반환
 - **Include()**: 쿼리 결과에 포함할 관련 개체를 지정함
 
+<br>
 
+---
+## Html Helper로 Form 생성하기
+### Html Helper
+- Html Helper는 모두 @Html 으로 시작
+- @: Razor 문법으로 View 클래스(WebViewPage)의 Html 속성을 호출한다는 의미
+- 모델 데이타 혹은 View 데이타 바인딩을 쉽게 할 수 있는 기능을 제공
+- __메서드 종류__
+  - Weakly Typed 메서드: Html.TextBox()와 같은 형태
+    ```
+    /* <input class="form-control" id="Name" name="Name" type="text" value=""/> */
+    
+    @Html.TextBox("Name", null, new {@ class = "form-control"})
+    // 첫번째 파라미터: 모델의 Name 속성을 사용한다는 의미
+    // 두번째 파라미터: TextBox의 Value, null이면 모델명.Name
+    // 세번째 파라미터: HTML의 기타 attributes
+    ```
+  - Strongly Typed 메서드: Html.TextBoxFor()와 같은 형태
+    ``` 
+    @Html.TextBoxFor(m -> m.Name, new {@ class = "form-control"})
+    // 첫번째 파라미터: 람다식, 입력: m = 모델 / 출력: m.Name = 모델명.Name
+    // 두번째 파라미터: TextBox의 Value, null이면 모델명.Name	(생략 가능)
+    // 세번째 파라미터: HTML의 기타 attributes
+    ```
+
+### Html Helper 메서드
+__* 참고 사이트__ <br>
+  [https://thebook.io/006824/1385/](https://thebook.io/006824/1385/) <br>
+  [https://www.tutorialsteacher.com/mvc/html-helpers](https://www.tutorialsteacher.com/mvc/html-helpers) <br>
+  [https://docs.devexpress.com/AspNetMvc/14602/components/data-editors-extensions/strongly-typed-editor-types](https://docs.devexpress.com/AspNetMvc/14602/components/data-editors-extensions/strongly-typed-editor-types)
+- 입력 요소
+  - Html.TextBox / Html.TextBoxFor: 문자열 입력받기 (```<input type="text">```)
+  - Html.TextArea / Html.TextAreaFor: 문자열 여러줄 입력받기 (```<textarea>```)
+  - Html.CheckBox / Html.CheckBoxFor: ```<input type="checkbox">```
+  - Html.ListBox / Html.ListBoxFor: 리스트 형태의 체크박스
+  - Html.RadioButton / Html.RadioButtonFor: ```<input type="radiobutton">```
+  - Html.DropDownList / Html.DropDownListFor: ```<select><option>```
+  - Html.Hidden / Html.HiddenFor: 뷰에 출력하지 않고 값 전달 (```<input type="hidden">```)
+  - Password / Html.PasswordFor: ```<input type="password">```
+  - Html.Editor / Html.EditorFor: 모델 속성의 데이터 타입에 따라 입력받기 <br>
+  		Html.EditorForModel: 모델 전체에 입력받기 (```<input type="">```)
+    ```
+    //DataType			//HtmlElement
+    string			<input type="text">
+    int				<input type="number">
+    decimal, float		<input type="text">
+    boolean			<input type="checkbox">
+    Enum				<input type="text">
+    DataTime		<input type="datatime">
+    ```
+- 데이터 출력
+  - Html.Display / Html.DisplayFor: 모델 속성값 출력 <br>
+  		 Html.DisplayForModel: 모델 전체 출력
+- 기타
+  - Html.Label / Html.LabelFor: 라벨 설정 (```<label for="아이디">```) <br>
+    __*__ 모델 클래스에서 속성에 __Display(Name = "라벨명")__ 을 추가해 라벨명 설정 가능 <br>
+&nbsp; (라벨명을 변경하고 싶을 때 뷰가 아닌 모델 클래스에서 바꿔주어야 한다는 단점이 있음)
+  - Html.ActionLink: 링크 설정 (```<a href="">```)
+  
+### Form 생성
+- __Html.BeginForm()__: <form> 태그를 자동으로 만들어주는 헬퍼 메서드
+- url은 언제든 변경이 가능하기 때문에 헬퍼 메서드를 사용하게 되면 변경된 URL에 맞게 속성이 재지정됨
+  ```
+  @using (Html.BeginForm("액션명","테이블명"))
+  {
+
+  }
+  ```
 
 
 
