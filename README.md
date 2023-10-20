@@ -283,7 +283,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
   - NOT NULL: **Required**
   - 문자열 길이 제한: **StringLength(길이)**
  
-### DB에 데이터 추가하기
+### DB에 데이터 직접 추가하기
 add-migration 마이그레이션명 >열린 마이그레이션 파일의 Up()메서드 안에 SQL 메서드로 쿼리문 작성 > update-database
 ```
 public override void Up()
@@ -472,9 +472,78 @@ __[입력 요소]__
   }
   ```
 
+<br>
 
+---
+## 컨트롤러에서 DB 작업하기
+### 데이터 조회: ToList()
+```
+var 객체명 = _context.테이블명.ToList();
+var 객체명 = _context.테이블명.Include(m => m.참조모델명).ToList();	// 조회할 테이블이 다른 테이블을 참조하는 경우
+```
 
+### 데이터 추가: Add()
+```
+_context.Customers.Add(모델객체);
+_context.SaveChanges();     // commit tran
+```
 
+### 데이터 수정
+1. 아이디로 일치하는 레코드 찾기
+  ```var modelInDb = _context.테이블명.SingleOrDefault(m => m.Id == 파라미터로받은모델.Id);```
+2. 수정하기
+  - 방법1: ```TryUpdateModel(customerInDb, "", new string[] {"업데이트할속성1","속성2",...});	//보안에 취약하다는 단점```
+  - 방법2: ```Mapper.Map(파라미터모델,modelInDb) ```
+  - 방법3
+    ```
+    /* 수동으로 매핑 */
+    modelInDb.속성명1 = 파라미터모델.속성명1;
+    modelInDb.속성명2 = 파라미터모델.속성명2;
+    ```
+3. 저장하기: ```_context.SaveChanges();```
+
+### 데이터 삭제: Remove()
+```
+var modelInDb = _context.테이블명.SingleOrDefault(m => m.Id == 파라미터로받은모델.Id);	//아이디로 일치하는 레코드 찾기
+_context.Customers.Remove(modelInDb);
+_context.SaveChanges();
+```
+
+<br>
+
+---
+## 변수와 상수
+- 변수(Variable): 값을 저장할 수 있는 메모리 내 저장소에 부여하는 이름
+  - 선언: ```자료형 변수명;		// 초기화하지 않은 변수는 사용할 수 없음``` 
+- 상수(Constant): 변경이 불가능한 값 (안정성)
+  - 선언: ```const 자료형 변수명 = 값;	// 값을 할당하지 않은 상수는 사용할 수 없음```
+
+### 식별자 생성 규칙
+: 숫자로 시작할 수 없음, 예약어 사용 불가, 의미있는 이름으로 작성
+- 네이밍 컨벤션 (Naming Convention)
+  - 카멜 케이스(Camel Case): **f**irst**N**ame	&nbsp;&nbsp;=> **지역 변수** ex) ```int totalNumber;```
+  - 파스칼 케이스(Pascal Case): **F**irst**N**ame	&nbsp;&nbsp;=> **상수** ex) ```const int MaxZoom = 5;```
+  - 헝가리안(Hungarian Notation): strFirstName	&nbsp;&nbsp;=> C#에서는 사용 X
+
+### 자료형 (C# Type / .NET Type)
+__[원시 자료형 (Primitive Type)]__
+- 정수
+  - byte / Byte : 1Bytes, 0~255
+  - short / Int16: 2Bytes, -32768~32767
+  - int / Int32: 4Bytes, -2.1B~2.1B
+- 실수
+  - long / Int64: 8Bytes
+  - float / Single: 4Bytes	```float number = 1.2f		//'f'붙이지 않으면 2(double형)로 처리함```
+  - double / Double: 8Bytes
+  - decimal / Decimal: 16Bytes	```decimal number = 1.2m```
+- 캐릭터
+  - char / Char: 2Bytes, 유니코드 문자
+- 불
+  - bool / Boolean: 1Bytes, True/False
+__[참조 자료형 (Reference Type)]__
+: String, Array, Enum, Class
+
+### 오버플로우 (Overflowing)
 
 
 
